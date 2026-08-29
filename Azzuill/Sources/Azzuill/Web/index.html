@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>AZZUILL VIP 3D - FREE FIRE OPTIMIZER</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Three.js 3D Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="ff_offsets.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- 3D Canvas Background -->
+    <canvas id="bg3d"></canvas>
+    <div class="hologram-grid"></div>
+    <div class="vignette-overlay"></div>
+
+    <!-- Main Container -->
+    <div class="app-container">
+        <!-- Header HUD with Custom Avatar -->
+        <header class="hud-header">
+            <div class="avatar-container">
+                <img src="avatar.png" alt="Azzuill Avatar" class="user-avatar">
+                <div class="avatar-glow-ring"></div>
+            </div>
+            <div class="brand-badge">
+                <div class="pulse-dot"></div>
+                <span>AZZUILL EDITION • OB54 VIP</span>
+            </div>
+            <h1 class="glitch-title" data-text="AZZUILL VIP 3D">AZZUILL VIP 3D</h1>
+            <p class="sub-tag">FREE FIRE ULTRA SENSITIVITY & MEMORY ENGINE</p>
+
+            <!-- Real-time HUD Telemetry -->
+            <div class="telemetry-bar">
+                <div class="telem-item">
+                    <span class="telem-label">FPS</span>
+                    <span class="telem-val neon-green" id="hud-fps">120</span>
+                </div>
+                <div class="telem-item">
+                    <span class="telem-label">PING</span>
+                    <span class="telem-val neon-cyan" id="hud-ping">16 ms</span>
+                </div>
+                <div class="telem-item">
+                    <span class="telem-label">RAM</span>
+                    <span class="telem-val neon-yellow" id="hud-ram">28%</span>
+                </div>
+                <div class="telem-item">
+                    <span class="telem-label">OB54</span>
+                    <span class="telem-val neon-pink" id="hud-status">READY</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- 3D Holographic Core Viewport -->
+        <div class="core-preview-box">
+            <div class="core-tag">3D AIM & RECOIL CORE ENGINE</div>
+            <!-- Crosshair / Aim Preview Overlay -->
+            <div class="aim-crosshair-container" id="aimCrosshair">
+                <div class="ch-circle"></div>
+                <div class="ch-center"></div>
+                <div class="ch-line ch-top"></div>
+                <div class="ch-line ch-bottom"></div>
+                <div class="ch-line ch-left"></div>
+                <div class="ch-line ch-right"></div>
+                <div class="ch-target-head" id="chHead">HEADSHOT 100% LOCK</div>
+            </div>
+            <div class="core-subinfo">
+                <span id="core-state-text">⚡ Core Engine: Standby (Chạm để tương tác 3D)</span>
+            </div>
+        </div>
+
+        <!-- Master Switch & Game Launcher Action Bar -->
+        <div class="master-action-box">
+            <button class="btn-vip-activate" id="btnMasterActivate">
+                <span class="btn-glow"></span>
+                <span class="btn-icon">⚡</span>
+                <span class="btn-text" id="masterBtnText">KÍCH HOẠT VIP OFFSET OB54 (1-CHẠM)</span>
+            </button>
+            <button class="btn-launch-game" id="btnLaunchFF">
+                <span class="btn-glow-green"></span>
+                <span class="btn-icon">🚀</span>
+                <span class="btn-text">MỞ GAME FREE FIRE THƯỜNG</span>
+            </button>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <nav class="hud-tabs">
+            <button class="tab-btn active" data-tab="tab-nhetam">
+                <span class="tab-icon">🎯</span>
+                <span class="tab-title">Nhẹ Tâm FF</span>
+            </button>
+            <button class="tab-btn" data-tab="tab-toiuu">
+                <span class="tab-icon">⚡</span>
+                <span class="tab-title">Tối Ưu FF</span>
+            </button>
+            <button class="tab-btn" data-tab="tab-fixrung">
+                <span class="tab-icon">🛡️</span>
+                <span class="tab-title">Fix Rung</span>
+            </button>
+            <button class="tab-btn" data-tab="tab-fixlo">
+                <span class="tab-icon">🎯</span>
+                <span class="tab-title">Fix Lố FF</span>
+            </button>
+        </nav>
+
+        <!-- Tab Contents -->
+        <main class="hud-content">
+            <!-- TAB 1: NHẸ TÂM FF -->
+            <section class="tab-pane active" id="tab-nhetam">
+                <div class="card-3d">
+                    <div class="card-header">
+                        <h3>🎯 TỐI ƯU CẢM ỨNG & NHẸ TÂM ALL SÚNG</h3>
+                        <span class="badge vip">VIP PRO</span>
+                    </div>
+
+                    <!-- Switch 1 -->
+                    <div class="feature-row">
+                        <div class="feat-info">
+                            <div class="feat-name">Tần Số Quét Cảm Ứng 240Hz (Touch Multiplier)</div>
+                            <div class="feat-desc">Ép xung tốc độ phản hồi màn hình lên 240Hz cho cảm giác vuốt cực nhẹ, lướt siêu nhạy.</div>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="sw-touch-multi" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <!-- Switch 2 -->
+                    <div class="feature-row">
+                        <div class="feat-info">
+                            <div class="feat-name">Trợ Lực Vuốt Tâm Siêu Nhẹ (Smooth Drag Assist)</div>
+                            <div class="feat-desc">Hỗ trợ trợ lực vuốt nút bắn lên đầu mượt mà, loại bỏ hiện tượng nặng tay hoặc rít màn hình.</div>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="sw-smooth-drag" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <!-- Sliders for Scope Sensitivity Matrix -->
+                    <div class="slider-group">
+                        <div class="slider-header">
+                            <span>Độ Nhạy Nhìn Xung Quanh (General DPI)</span>
+                            <span class="slider-val" id="val-sens-general">200</span>
+                        </div>
+                        <input type="range" class="hud-slider" id="rng-sens-general" min="50" max="200" value="200">
+                    </div>
+
+                    <div class="slider-group">
+                        <div class="slider-header">
+                            <span>Độ Nhạy Red Dot (Trợ Lực Gõ Đầu)</span>
+                            <span class="slider-val" id="val-sens-reddot">195</span>
+                        </div>
+                        <input type="range" class="hud-slider" id="rng-sens-reddot" min="50" max="200" value="195">
+                    </div>
+
+                    <div class="slider-group">
+                        <div class="slider-header">
+                            <span>Ống Ngắm 2X / 4X (Fast Scope Drag)</span>
+                            <span class="slider-val" id="val-sens-scope">180</span>
+                        </div>
+                        <input type="range" class="hud-slider" id="rng-sens-scope" min="50" max="200" value="180">
+                    </div>
+
+                    <div class="slider-group">
+                        <div class="slider-header">
+                            <span>Ống Ngắm Bắn Tỉa (AWM / Barrett Fast Aim)</span>
+                            <span class="slider-val" id="val-sens-sniper">160</span>
+                        </div>
+                        <input type="range" class="hud-slider" id="rng-sens-sniper" min="50" max="200" value="160">
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 2: TỐI ƯU FF -->
+            <section class="tab-pane" id="tab-toiuu">
+                <div class="card-3d">
+                    <div class="card-header">
+                        <h3>⚡ TỐI ƯU HIỆU NĂNG & MỞ KHÓA 120 FPS</h3>
+                        <span class="badge turbo">TURBO BOOST</span>
+                    </div>
+
+                    <!-- Switch 1 -->
+                    <div class="feature-row">
+                        <div class="feat-info">
+                            <div class="feat-name">Mở Khóa 120 FPS / Cực Cao (Ultra FPS Unlock)</div>
+                            <div class="feat-desc">Khóa tốc độ khung hình mượt mà tuyệt đối, loại bỏ hoàn toàn hiện tượng tụt FPS.</div>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="sw-fps-unlock" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <!-- Switch 2 -->
+                    <div class="feature-row">
+                        <div class="feat-info">
+                            <div class="feat-name">Tối Ưu Shaders & Đồ Họa Siêu Mượt</div>
+                            <div class="feat-desc">Khử bóng mờ, làm nét viền đối thủ giúp quan sát và bắt tâm nhanh hơn.</div>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="sw-shader-opt" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <!-- Switch 3 -->
+                    <div class="feature-row">
+                        <div class="feat-info">
+                            <div class="feat-name">Gaming Low-Latency DNS (Giảm Ping Mạng)</div>
+                            <div class="feat-desc">Tự động định tuyến máy chủ Cloudflare / Google Gaming DNS chống delay đạn.</div>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="sw-dns-opt" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <!-- Action Button: RAM Clean -->
+                    <div class="action-row">
+                        <button class="btn-action-hud" id="btnCleanRam">
+                            <span>🧹 DỌN SẠCH RAM & BỘ NHỚ ĐỆM NGAY</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 3: FIX RUNG -->
+            <section class="tab-pane" id="tab-fixrung">
+                <div class="card-3d">
+                    <div class="card-header">
+                        <h3>🛡️ KHỬ RUNG GIẬT TÂM & ỔN ĐỊNH GÓC NHÌN</h3>
+                        <span class="badge shield">ANTI-SHAKE</span>
+                    </div>
+
+                    <!-- Switch 1 -->
+                    <div class="feature-row">
+                        <div class="feat-info">
+                            <div class="feat-name">Khử Rung Tay Khi Kéo Nút Bắn (Anti-Jitter)</div>
+                            <div class="feat-desc">Thuật toán Exponential Smoothing triệt tiêu rung lắc từ ngón tay khi vuốt.</div>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="sw-anti-jitter" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <!-- Switch 2 -->
+                    <div class="feature-row">
+                        <div class="feat-info">
+                            <div class="feat-name">Chống Rung Nòng Súng Liên Thanh (Recoil Stabilizer)</div>
+                            <div class="feat-desc">Ổn định độ chụm đạn khi sấy liên tục các dòng súng AR (AK, Scar, M4) & SMG (MP40).</div>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="sw-recoil-stab" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <!-- Switch 3 -->
+                    <div class="feature-row">
+                        <div class="feat-info">
+                            <div class="feat-name">Cân Bằng Con Quay Hồi Chuyển (Gyro Stabilizer)</div>
+                            <div class="feat-desc">Làm mịn cảm biến con quay hồi chuyển, giảm độ rung khi nghiêng máy bắn.</div>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="sw-gyro-stab" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="slider-group">
+                        <div class="slider-header">
+                            <span>Mức Độ Khử Rung (Stabilization Filter)</span>
+                            <span class="slider-val" id="val-stab-level">98%</span>
+                        </div>
+                        <input type="range" class="hud-slider" id="rng-stab-level" min="10" max="100" value="98">
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 4: FIX LỐ FF -->
+            <section class="tab-pane" id="tab-fixlo">
+                <div class="card-3d">
+                    <div class="card-header">
+                        <h3>🎯 FIX LỐ TÂM & KHÓA VÙNG ĐẦU (ANTI-OVERSHOOT)</h3>
+                        <span class="badge lock">AIM LOCK</span>
+                    </div>
+
+                    <!-- Switch 1 -->
+                    <div class="feature-row">
+                        <div class="feat-info">
+                            <div class="feat-name">Khóa Chặn Kéo Vọt Đầu (Headshot Drag Clamp)</div>
+                            <div class="feat-desc">Ngăn tâm súng bị kéo quá đà bay lên trời; tự động ghìm và dính chặt tại đỉnh đầu.</div>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="sw-drag-clamp" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <!-- Switch 2 -->
+                    <div class="feature-row">
+                        <div class="feat-info">
+                            <div class="feat-name">Hãm Tốc Độ Vuốt Gần Mục Tiêu (Deceleration Curve)</div>
+                            <div class="feat-desc">Giảm tốc độ trượt khi tâm tiếp cận vùng hitbox đầu giúp tỷ lệ One-Shot 100% đỏ.</div>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="sw-decel-curve" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <!-- Preset Selector for Weapons -->
+                    <div class="preset-group">
+                        <div class="preset-label">CHẾ ĐỘ SÚNG GÕ ĐẦU VIP (OB54):</div>
+                        <div class="preset-buttons">
+                            <button class="btn-preset active" data-preset="shotgun">
+                                <span class="p-icon">💥</span>
+                                <span class="p-name">Shotgun (M1887/M1014)</span>
+                            </button>
+                            <button class="btn-preset" data-preset="pistol">
+                                <span class="p-icon">🔫</span>
+                                <span class="p-name">Lục Gõ Đầu (Deagle/Woodpecker)</span>
+                            </button>
+                            <button class="btn-preset" data-preset="smg">
+                                <span class="p-icon">⚡</span>
+                                <span class="p-name">SMG Kéo Đỏ (MP40/UMP)</span>
+                            </button>
+                            <button class="btn-preset" data-preset="custom">
+                                <span class="p-icon">⚙️</span>
+                                <span class="p-name">Tự Do (All Weapons)</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="slider-group">
+                        <div class="slider-header">
+                            <span>Lực Khóa Chống Lố (Lock Strength)</span>
+                            <span class="slider-val" id="val-lock-strength">99%</span>
+                        </div>
+                        <input type="range" class="hud-slider" id="rng-lock-strength" min="10" max="100" value="99">
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Bottom Action Dock -->
+        <footer class="hud-dock">
+            <button class="btn-dock" id="btnExportConfig">
+                <span>📁 XUẤT PROFILE</span>
+            </button>
+            <button class="btn-dock" id="btnSaveConfig">
+                <span>💾 LƯU CẤU HÌNH</span>
+            </button>
+            <button class="btn-dock btn-reset" id="btnResetConfig">
+                <span>🔄 RESET</span>
+            </button>
+        </footer>
+
+        <!-- Notification Toast HUD -->
+        <div class="toast-hud" id="toastHud">
+            <div class="toast-icon">⚡</div>
+            <div class="toast-msg" id="toastMsg">Hệ thống sẵn sàng!</div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

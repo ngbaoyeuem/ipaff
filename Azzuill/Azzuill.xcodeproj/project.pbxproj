@@ -50,7 +50,7 @@
 				AA000014 /* LaunchScreen.storyboard */,
 				AA000015 /* Info.plist */,
 			);
-			path = Azzuill;
+			path = Sources/Azzuill;
 			sourceTree = "<group>";
 		};
 		AA000032 /* Products */ = {

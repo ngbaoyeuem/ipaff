@@ -1,0 +1,100 @@
+name: Build Azzuill IPA
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-15
+    
+    steps:
+    - name: Checkout source
+      uses: actions/checkout@v4
+
+    - name: Select Xcode 16
+      run: sudo xcode-select -s /Applications/Xcode_16.app/Contents/Developer
+
+    - name: Show Xcode version
+      run: xcodebuild -version
+
+    - name: Set up signing (self-signed for Esign)
+      run: |
+        # Tạo self-signed certificate tạm để build archive
+        # Esign sẽ ký lại bằng cert của người dùng sau
+        security create-keychain -p "" build.keychain
+        security default-keychain -s build.keychain
+        security unlock-keychain -p "" build.keychain
+        security set-keychain-settings -lut 21600 build.keychain
+
+    - name: Build app (unsigned archive)
+      run: |
+        cd Azzuill
+        xcodebuild archive \
+          -project Azzuill.xcodeproj \
+          -scheme Azzuill \
+          -configuration Release \
+          -archivePath $RUNNER_TEMP/Azzuill.xcarchive \
+          CODE_SIGN_IDENTITY="" \
+          CODE_SIGNING_REQUIRED=NO \
+          CODE_SIGNING_ALLOWED=NO \
+          DEVELOPMENT_TEAM="" \
+          -allowProvisioningUpdates \
+          | xcpretty || true
+
+    - name: Export IPA (unsigned)
+      run: |
+        # Extract .app từ archive
+        ARCHIVE_PATH="$RUNNER_TEMP/Azzuill.xcarchive"
+        APP_PATH=$(find "$ARCHIVE_PATH/Products/Applications" -name "*.app" | head -1)
+        
+        echo "Found app at: $APP_PATH"
+        
+        # Tạo Payload/ structure
+        mkdir -p "$RUNNER_TEMP/Payload"
+        cp -R "$APP_PATH" "$RUNNER_TEMP/Payload/"
+        
+        # Đóng gói thành IPA
+        cd "$RUNNER_TEMP"
+        zip -r Azzuill.ipa Payload/
+        
+        echo "IPA created: $RUNNER_TEMP/Azzuill.ipa"
+        ls -lh "$RUNNER_TEMP/Azzuill.ipa"
+
+    - name: Upload IPA as artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: Azzuill-IPA
+        path: ${{ runner.temp }}/Azzuill.ipa
+        retention-days: 30
+
+    - name: Create Release
+      uses: softprops/action-gh-release@v2
+      if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+      with:
+        tag_name: v1.0.${{ github.run_number }}
+        name: "Azzuill FF VIP v1.0.${{ github.run_number }}"
+        body: |
+          ## 🎮 Azzuill - Free Fire VIP Optimizer
+          
+          ### 🔧 Cách cài đặt:
+          1. Tải file `Azzuill.ipa` bên dưới
+          2. Mở **Esign** trên iPhone
+          3. Import `Azzuill.ipa` vào Esign
+          4. Bấm **Ký (Sign)** → Chọn certificate → **Ký ứng dụng**
+          5. Bấm **Cài đặt (Install)**
+          6. Vào `Settings > General > VPN & Device Management` → Trust certificate
+          7. Mở app **Azzuill** 🎯
+          
+          ### ⚡ Tính năng OB54:
+          - 🎯 Nhẹ tâm tất cả súng (240Hz sampling)
+          - ⚡ Tối ưu FPS 120Hz
+          - 🛡️ Fix rung / recoil
+          - 🎯 Fix lố (anti-overshoot)
+          - 🚀 Mở game FF thường
+        files: ${{ runner.temp }}/Azzuill.ipa
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

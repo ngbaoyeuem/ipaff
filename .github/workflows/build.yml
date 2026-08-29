@@ -5,6 +5,9 @@ on:
     branches: [ main, master ]
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: macos-15
@@ -16,85 +19,57 @@ jobs:
     - name: Select Xcode 16
       run: sudo xcode-select -s /Applications/Xcode_16.app/Contents/Developer
 
-    - name: Show Xcode version
-      run: xcodebuild -version
-
-    - name: Set up signing (self-signed for Esign)
-      run: |
-        # Tạo self-signed certificate tạm để build archive
-        # Esign sẽ ký lại bằng cert của người dùng sau
-        security create-keychain -p "" build.keychain
-        security default-keychain -s build.keychain
-        security unlock-keychain -p "" build.keychain
-        security set-keychain-settings -lut 21600 build.keychain
-
-    - name: Build app (unsigned archive)
+    - name: Build iOS App (.app)
       run: |
         cd Azzuill
-        xcodebuild archive \
+        xcodebuild \
           -project Azzuill.xcodeproj \
           -scheme Azzuill \
           -configuration Release \
-          -archivePath $RUNNER_TEMP/Azzuill.xcarchive \
-          CODE_SIGN_IDENTITY="" \
-          CODE_SIGNING_REQUIRED=NO \
+          -sdk iphoneos \
+          -derivedDataPath derived_data \
           CODE_SIGNING_ALLOWED=NO \
-          DEVELOPMENT_TEAM="" \
-          -allowProvisioningUpdates \
-          | xcpretty || true
+          CODE_SIGNING_REQUIRED=NO \
+          CODE_SIGN_IDENTITY="" \
+          AD_HOC_CODE_SIGNING_ALLOWED=YES \
+          clean build
 
-    - name: Export IPA (unsigned)
+    - name: Package IPA
       run: |
-        # Extract .app từ archive
-        ARCHIVE_PATH="$RUNNER_TEMP/Azzuill.xcarchive"
-        APP_PATH=$(find "$ARCHIVE_PATH/Products/Applications" -name "*.app" | head -1)
-        
+        APP_PATH=$(find Azzuill/derived_data -name "Azzuill.app" | head -1)
         echo "Found app at: $APP_PATH"
         
-        # Tạo Payload/ structure
-        mkdir -p "$RUNNER_TEMP/Payload"
-        cp -R "$APP_PATH" "$RUNNER_TEMP/Payload/"
+        mkdir -p Payload
+        cp -R "$APP_PATH" Payload/
+        zip -r Azzuill.ipa Payload
         
-        # Đóng gói thành IPA
-        cd "$RUNNER_TEMP"
-        zip -r Azzuill.ipa Payload/
-        
-        echo "IPA created: $RUNNER_TEMP/Azzuill.ipa"
-        ls -lh "$RUNNER_TEMP/Azzuill.ipa"
+        ls -lh Azzuill.ipa
 
-    - name: Upload IPA as artifact
+    - name: Upload IPA Artifact
       uses: actions/upload-artifact@v4
       with:
         name: Azzuill-IPA
-        path: ${{ runner.temp }}/Azzuill.ipa
+        path: Azzuill.ipa
         retention-days: 30
 
-    - name: Create Release
+    - name: Create GitHub Release
       uses: softprops/action-gh-release@v2
-      if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
       with:
         tag_name: v1.0.${{ github.run_number }}
-        name: "Azzuill FF VIP v1.0.${{ github.run_number }}"
+        name: "Azzuill Free Fire VIP v1.0.${{ github.run_number }}"
         body: |
-          ## 🎮 Azzuill - Free Fire VIP Optimizer
+          ## 🎮 Azzuill - Free Fire VIP Optimizer (OB54)
           
-          ### 🔧 Cách cài đặt:
-          1. Tải file `Azzuill.ipa` bên dưới
-          2. Mở **Esign** trên iPhone
-          3. Import `Azzuill.ipa` vào Esign
-          4. Bấm **Ký (Sign)** → Chọn certificate → **Ký ứng dụng**
-          5. Bấm **Cài đặt (Install)**
-          6. Vào `Settings > General > VPN & Device Management` → Trust certificate
-          7. Mở app **Azzuill** 🎯
+          ### 📱 Hướng dẫn cài đặt trên iPhone bằng Esign:
+          1. Tải file **`Azzuill.ipa`** bên dưới.
+          2. Mở ứng dụng **Esign** trên iPhone.
+          3. Chọn **Nhập tệp (Import)** -> Chọn `Azzuill.ipa`.
+          4. Bấm **Ký (Signature)** -> Chọn chứng chỉ của bạn -> Bấm **Ký ứng dụng**.
+          5. Bấm **Cài đặt (Install)**.
+          6. Mở app **Azzuill** và tận hưởng! 🎉
           
-          ### ⚡ Tính năng OB54:
-          - 🎯 Nhẹ tâm tất cả súng (240Hz sampling)
-          - ⚡ Tối ưu FPS 120Hz
-          - 🛡️ Fix rung / recoil
-          - 🎯 Fix lố (anti-overshoot)
-          - 🚀 Mở game FF thường
-        files: ${{ runner.temp }}/Azzuill.ipa
-        draft: false
-        prerelease: false
+          ---
+          *Build tự động bởi Xcode 16 trên macOS chuẩn 100% không lỗi!*
+        files: Azzuill.ipa
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

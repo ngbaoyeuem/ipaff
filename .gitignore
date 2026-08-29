@@ -1,0 +1,12 @@
+# Git ignore file
+xcuserdata/
+*.xccheckout
+*.moved-aside
+DerivedData/
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+build/
+.DS_Store
+Pods/
